@@ -10,12 +10,49 @@
 </div>
 
 <div class="container">
-<form>
-    {{ form.csrf_token() }}
-    {{ render_field(form.number_of_tickets) }}
-    {{ render_field(form.submit) }}
+<form method="POST" action="">
+    {{ ticket_form.csrf_token() }}
+    {{ render_field(ticket_form.number_of_tickets) }}
+    {{ render_field(ticket_form.submit) }}
 </form>
 </div>
 
-
+<div class="modal" id="purchase-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Purchase Tickets</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><h5>{{ movie.title }}</h5></p>
+          <p><h6>{{ tickets }} tickets for {{ showing.time }} showing on {{ showing.date }}.</h6></p>
+          <p>Total Purchase: ${{ showing.ticket_price * tickets }}</p>
+          <hr>
+        <form method="POST" action="">
+                {{ purchase_form.csrf_token() }}
+                {{ render_field(purchase_form.first_name) }}
+                {{ render_field(purchase_form.last_name) }}
+                {{ render_field(purchase_form.email) }}
+                {{ render_field(purchase_form.credit_card) }}
+                {{ render_field(purchase_form.exp_month) }}
+                {{ render_field(purchase_form.exp_year) }}
+                {{ render_field(purchase_form.secret_code) }}
+                {{ render_field(purchase_form.purchase_submit) }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% include "footer.html" %}
+
+{% block script %}
+        {% if tickets > 0 %}
+            <script>
+                var myModal = new bootstrap.Modal(document.getElementById('purchase-modal'))
+                myModal.show()
+            </script>
+        {% endif %}
+{% endblock %}

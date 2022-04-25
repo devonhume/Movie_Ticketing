@@ -9,6 +9,7 @@ from forms import TicketsForm, PurchaseForm
 
 ticketer = TicketHandler()
 biller = BillingHandler()
+tickets = 0
 
 
 # ----------- Routes --------------
@@ -33,12 +34,25 @@ def showings(ticket):
 
 @app.route('/purchase/<showing_id>', methods=['GET', 'POST'])
 def purchase(showing_id):
+    global tickets
+    print(tickets)
     showing = Showing.query.get(showing_id)
     movie = Movie.query.get(showing.movie)
     ticket_form = TicketsForm()
-    if ticket_form.validate_on_submit():
-        return redirect(url_for('pay', data=(showing_id, ticket_form.number_of_tickets.data)))
-    return render_template('purchase.html', showing=showing, movie=movie, form=ticket_form)
+    purchase_form = PurchaseForm()
+    if ticket_form.submit.data and ticket_form.validate_on_submit():
+        print(f"data: {ticket_form.number_of_tickets.data}")
+        tickets = ticket_form.number_of_tickets.data
+        return redirect(url_for('purchase', showing_id=showing_id))
+    if purchase_form.purchase_submit.data and purchase_form.validate_on_submit():
+
+    return render_template('purchase.html',
+                           showing=showing,
+                           movie=movie,
+                           tickets=tickets,
+                           ticket_form=ticket_form,
+                           purchase_form=purchase_form
+                           )
 
 @app.route('/buy/<data>', methods=['GET', 'POST'])
 def buy(data):
