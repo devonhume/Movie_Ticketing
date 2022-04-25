@@ -1,0 +1,21 @@
+{% include "header.html" %}
+{% from 'bootstrap4/form.html' import render_field %}
+
+<div class="container">
+
+    <h2>{{ movie.title }}</h2>
+    <h3>{{ showing.date }} | {{ showing.time }} | ${{ showing.ticket_price }}</h3>
+    <hr>
+
+</div>
+
+<div class="container">
+<form>
+    {{ form.csrf_token() }}
+    {{ render_field(form.number_of_tickets) }}
+    {{ render_field(form.submit) }}
+</form>
+</div>
+
+
+{% include "footer.html" %}

@@ -1,0 +1,26 @@
+{% include "header.html" %}
+
+
+<div class="container">
+    <div class="row">
+    {% for movie in movies %}
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <img src="{{movie.image}}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{movie.title}}</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{movie.runtime_hrs}} hrs {{movie.runtime_mins}} mins</li>
+                        <li class="list-group-item">Rated {{movie.rating}}</li>
+                    </ul>
+                    <a href="{{ url_for('showings', ticket=movie.id) }}" class="btn btn-primary">Buy Tickets!</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+
+
+{% include "footer.html" %}

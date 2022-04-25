@@ -3,14 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap4
 
 # Create Flask App
-
-app = Flask(__name__)
-
-# Create Flask App
 app = Flask(__name__)
 
 # Configure QLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///plotter_database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cinema.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Set Secret Keys

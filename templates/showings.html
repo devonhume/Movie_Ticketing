@@ -1,0 +1,21 @@
+{% include "header.html" %}
+
+<div class="container">
+<h2>{{ movie.title }}</h2>
+<hr>
+    <div class="container">
+<ul>
+    {% for showing in movie.showings %}
+    <li>
+        <div class="container">
+        <a class="btn btn-primary" href="{{ url_for('purchase', showing_id=showing.id) }}">BUY</a>
+        {{ showing.date }} | {{ showing.time }} | ${{ showing.ticket_price }}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+</div>
+</div>
+
+
+{% include "footer.html" %}
