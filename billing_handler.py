@@ -1,5 +1,6 @@
 from init import db
 from ticket_handler import TicketHandler, Showing, Ticket
+import mail_handler as mh
 
 
 class BillingHandler:
@@ -16,7 +17,6 @@ class BillingHandler:
     def buy_tickets(self, purchases, billing_info):
         showing = Showing.query.get(purchases['showing_id'])
         if showing.seats_available < purchases['tickets']:
-            print("Not Enough Seats")
             return False
 
         tickets = self.ticketer.generate_tickets(
@@ -27,14 +27,13 @@ class BillingHandler:
 
         if tickets:
             if self.charge_customer(total=purchases['total'], billing_info=billing_info):
-                print("Charge Successful")
+                mh.send_tickets({'ticket_ids': tickets, 'showing_id': purchases['showing_id'], 'buyer': billing_info['buyer']})
                 return True
             else:
                 for ticket in tickets:
                     del_ticket = Ticket.query.get(ticket)
                     db.session.delete(del_ticket)
                     db.commit
-                print("Charge Failed")
                 return False
 
     def charge_customer(self, total, billing_info):
