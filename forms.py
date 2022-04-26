@@ -17,3 +17,6 @@ class PurchaseForm(FlaskForm):
     exp_year = IntegerField("Expiration Year", validators=[DataRequired()])
     secret_code = IntegerField("Secret Code", validators=[DataRequired()])
     purchase_submit = SubmitField("Purchase")
+
+class ConfirmForm(FlaskForm):
+    confirm = SubmitField("Close")

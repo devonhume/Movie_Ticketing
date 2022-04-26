@@ -16,9 +16,11 @@ class TicketHandler:
         return dict
 
     def generate_tickets(self, showing_id, tickets, buyer):
-        showing = db.showings.query.filter_by(id=showing_id).first()
+        print("Generate Tickets running")
+        showing = Showing.query.get(showing_id)
         ticket_ids = []
         if showing.seats_available < tickets:
+            print("Not enough seats: gen")
             return False
         elif tickets:
             for i in range(tickets):
@@ -27,19 +29,22 @@ class TicketHandler:
                     showing=showing_id,
                     ticket_code=new_code,
                     ticket_type='adult',
-                    ticket_used=False
+                    ticket_used=False,
+                    buyer=buyer
                 )
                 db.session.add(new_ticket)
                 db.session.commit()
                 ticket_ids.append(new_ticket.id)
+            print(f"Returning Ticket IDs: {ticket_ids}")
             return ticket_ids
         else:
+            print("Ticket Gen Failed")
             return False
 
     def generate_ticket_code(self):
         while True:
             code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(10))
-            if not db.tickets.query.filter_by(ticket_code=code).first():
+            if not Ticket.query.filter_by(ticket_code=code).first():
                 return code
 
 

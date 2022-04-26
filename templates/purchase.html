@@ -46,10 +46,95 @@
     </div>
   </div>
 </div>
+
+<div class="modal" id="out-of-seats-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Not Enough Seats</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>You are attempting to purchase {{ tickets }} tickets.</p>
+          <p>There are only {{ showing.seats_available }} seats left for this showing.</p>
+          <p>Please purchase fewer tickets or choose a different showing.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="payment-failed-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">PAYMENT FAILED</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><h6>Something went wrong with your purchase!</h6></p>
+          <p>Please review your payment details and try again.</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="">
+            {{ fail_button.csrf_token() }}
+            {{ render_field(fail_button.confirm) }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="payment-success-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Payment Success!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Your tickets will arrive in the provided email shortly.</p>
+          <p>Thank you for using Movie Time!</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="">
+            {{ success_button.csrf_token() }}
+            {{ render_field(success_button.confirm) }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% include "footer.html" %}
 
 {% block script %}
-        {% if tickets > 0 %}
+        {% if ticket_flag == True %}
+            <script>
+                var myModal = new bootstrap.Modal(document.getElementById('out-of-seats-modal'))
+                myModal.show()
+            </script>
+        {% endif %}
+        {% if purchase_flag == 2 %}
+            <script>
+                var myModal = new bootstrap.Modal(document.getElementById('payment-failed-modal'))
+                myModal.show()
+            </script>
+        {% elif purchase_flag == 1 %}
+            <script>
+                var myModal = new bootstrap.Modal(document.getElementById('payment-success-modal'))
+                myModal.show()
+            </script>
+        {% endif %}
+        {% if tickets > 0 and ticket_flag == False %}
             <script>
                 var myModal = new bootstrap.Modal(document.getElementById('purchase-modal'))
                 myModal.show()
