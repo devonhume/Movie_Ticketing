@@ -9,7 +9,9 @@ from forms import TicketsForm, PurchaseForm,ConfirmForm
 
 ticketer = TicketHandler()
 biller = BillingHandler()
-tickets = 0
+adult_tickets = 0
+child_tickets = 0
+total_tickets = 0
 purchase_flag = 0
 
 
@@ -35,7 +37,9 @@ def showings(ticket):
 
 @app.route('/purchase/<showing_id>', methods=['GET', 'POST'])
 def purchase(showing_id):
-    global tickets
+    global adult_tickets
+    global child_tickets
+    global total_tickets
     global purchase_flag
     showing = Showing.query.get(showing_id)
     movie = Movie.query.get(showing.movie)
@@ -44,16 +48,19 @@ def purchase(showing_id):
     success_button = ConfirmForm()
     fail_button = ConfirmForm()
     ticket_flag = False
-    if tickets > showing.seats_available:
+    if total_tickets > showing.seats_available:
         ticket_flag = True
     if ticket_form.submit.data and ticket_form.validate_on_submit():
-        tickets = ticket_form.number_of_tickets.data
+        adult_tickets = ticket_form.adult_tickets.data
+        child_tickets = ticket_form.child_tickets.data
+        total_tickets = adult_tickets + child_tickets
         return redirect(url_for('purchase', showing_id=showing_id))
     if purchase_form.purchase_submit.data and purchase_form.validate_on_submit():
         order = {
-            'tickets': tickets,
+            'adult_tickets': adult_tickets,
+            'child_tickets': child_tickets,
             'showing_id': showing_id,
-            'total': tickets * showing.ticket_price
+            'total': adult_tickets * showing.ticket_price + child_tickets * showing.ticket_price / 2
         }
         print(order)
         billing_data = {
@@ -67,10 +74,12 @@ def purchase(showing_id):
         }
         print(billing_data)
         if biller.buy_tickets(purchases=order, billing_info=billing_data):
-            new_seats = showing.seats_available - tickets
+            new_seats = showing.seats_available - total_tickets
             showing.seats_available = new_seats
             db.session.commit()
-            tickets = 0
+            adult_tickets = 0
+            child_tickets = 0
+            total_tickets = 0
             purchase_flag = 1
             return redirect(url_for('purchase', showing_id=showing_id))
         else:
@@ -87,7 +96,8 @@ def purchase(showing_id):
     return render_template('purchase.html',
                            showing=showing,
                            movie=movie,
-                           tickets=tickets,
+                           adult_tickets=adult_tickets,
+                           child_tickets=child_tickets,
                            ticket_form=ticket_form,
                            purchase_form=purchase_form,
                            ticket_flag=ticket_flag,

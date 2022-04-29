@@ -4,7 +4,8 @@ from wtforms.validators import DataRequired, URL, Email
 
 
 class TicketsForm(FlaskForm):
-    number_of_tickets = IntegerField("Tickets", validators=[DataRequired()])
+    adult_tickets = IntegerField("Adult Tickets (13 and up)", validators=[DataRequired()])
+    child_tickets = IntegerField("Child Tickets (12 and under)", validators=[DataRequired()])
     submit = SubmitField("Buy")
 
 

@@ -4,7 +4,7 @@
 <div class="container">
 
     <h2>{{ movie.title }}</h2>
-    <h3>{{ showing.date }} | {{ showing.time }} | ${{ showing.ticket_price }}</h3>
+    <h3>{{ showing.date }} | {{ showing.time }} | Adult ${{ showing.ticket_price }} | Child ${{ showing.ticket_price / 2 }}</h3>
     <hr>
 
 </div>
@@ -12,7 +12,8 @@
 <div class="container">
 <form method="POST" action="">
     {{ ticket_form.csrf_token() }}
-    {{ render_field(ticket_form.number_of_tickets) }}
+    {{ render_field(ticket_form.adult_tickets) }}
+    {{ render_field(ticket_form.child_tickets) }}
     {{ render_field(ticket_form.submit) }}
 </form>
 </div>
@@ -28,8 +29,12 @@
       </div>
       <div class="modal-body">
         <p><h5>{{ movie.title }}</h5></p>
-          <p><h6>{{ tickets }} tickets for {{ showing.time }} showing on {{ showing.date }}.</h6></p>
-          <p>Total Purchase: ${{ showing.ticket_price * tickets }}</p>
+          {% if child_tickets > 0 %}
+            <p><h6>{{ adult_tickets }} adult tickets and {{ child_tickets }} child tickets for {{ showing.time }} showing on {{ showing.date }}.</h6></p>
+          {% else %}
+            <p><h6>{{ adult_tickets }} tickets for {{ showing.time }} showing on {{ showing.date }}.</h6></p>
+          {% endif %}
+          <p>Total Purchase: ${{ showing.ticket_price * adult_tickets + showing.ticket_price * child_tickets / 2 }}</p>
           <hr>
         <form method="POST" action="">
                 {{ purchase_form.csrf_token() }}
@@ -134,7 +139,7 @@
                 myModal.show()
             </script>
         {% endif %}
-        {% if tickets > 0 and ticket_flag == False %}
+        {% if adult_tickets + child_tickets > 0 and ticket_flag == False %}
             <script>
                 var myModal = new bootstrap.Modal(document.getElementById('purchase-modal'))
                 myModal.show()

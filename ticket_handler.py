@@ -15,24 +15,38 @@ class TicketHandler:
             dict[column.name] = db.getattr(self, column.name)
         return dict
 
-    def generate_tickets(self, showing_id, tickets, buyer):
+    def generate_tickets(self, showing_id, adult_tickets, child_tickets, buyer):
         showing = Showing.query.get(showing_id)
         ticket_ids = []
-        if showing.seats_available < tickets:
+        if showing.seats_available < adult_tickets + child_tickets:
             return False
-        elif tickets:
-            for i in range(tickets):
-                new_code = self.generate_ticket_code()
-                new_ticket = Ticket(
-                    showing=showing_id,
-                    ticket_code=new_code,
-                    ticket_type='adult',
-                    ticket_used=False,
-                    buyer=buyer
-                )
-                db.session.add(new_ticket)
-                db.session.commit()
-                ticket_ids.append(new_ticket.id)
+        elif adult_tickets or child_tickets:
+            if adult_tickets:
+                for i in range(adult_tickets):
+                    new_code = self.generate_ticket_code()
+                    new_ticket = Ticket(
+                        showing=showing_id,
+                        ticket_code=new_code,
+                        ticket_type='adult',
+                        ticket_used=False,
+                        buyer=buyer
+                    )
+                    db.session.add(new_ticket)
+                    db.session.commit()
+                    ticket_ids.append(new_ticket.id)
+            if child_tickets:
+                for i in range(child_tickets):
+                    new_code = self.generate_ticket_code()
+                    new_ticket = Ticket(
+                        showing=showing_id,
+                        ticket_code=new_code,
+                        ticket_type='child',
+                        ticket_used=False,
+                        buyer=buyer
+                    )
+                    db.session.add(new_ticket)
+                    db.session.commit()
+                    ticket_ids.append(new_ticket.id)
             return ticket_ids
         else:
             return False

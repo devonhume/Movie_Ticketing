@@ -16,12 +16,13 @@ class BillingHandler:
 
     def buy_tickets(self, purchases, billing_info):
         showing = Showing.query.get(purchases['showing_id'])
-        if showing.seats_available < purchases['tickets']:
+        if showing.seats_available < purchases['adult_tickets'] + purchases['child_tickets']:
             return False
 
         tickets = self.ticketer.generate_tickets(
             showing_id=purchases['showing_id'],
-            tickets=purchases['tickets'],
+            adult_tickets=purchases['adult_tickets'],
+            child_tickets=purchases['child_tickets'],
             buyer=billing_info['buyer']
         )
 
