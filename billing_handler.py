@@ -6,6 +6,7 @@ import mail_handler as mh
 class BillingHandler:
 
     def __init__(self):
+        self.status = True
         self.ticketer = TicketHandler()
 
     def ticket_total(self, tickets, showing_id):

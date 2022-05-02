@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 class TicketHandler:
 
     def __init__(self):
-        pass
+        self.status = True
 
     def get_all_movies(self):
         dict = {}
